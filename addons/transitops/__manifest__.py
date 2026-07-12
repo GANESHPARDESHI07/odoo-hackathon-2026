@@ -8,6 +8,8 @@
     "depends": ["base", "mail", "web"],
     "data": [
         "views/trip_views.xml",
+        "views/vehicle_views.xml",
+        "views/maintenance_views.xml",
     ],
     "installable": True,
     "application": False,

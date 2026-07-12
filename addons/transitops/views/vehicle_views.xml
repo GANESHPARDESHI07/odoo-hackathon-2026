@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_transitops_vehicle_list" model="ir.ui.view">
+        <field name="name">view.transitops.vehicle.list</field>
+        <field name="model">transitops.vehicle</field>
+        <field name="arch" type="xml">
+            <list string="Vehicles" decoration-success="status == 'available'" decoration-info="status == 'on_trip'" decoration-warning="status == 'in_shop'" decoration-danger="status == 'retired'">
+                <field name="name"/>
+                <field name="registration_no"/>
+                <field name="vehicle_type"/>
+                <field name="region"/>
+                <field name="status" widget="badge"/>
+                <field name="odometer_km"/>
+                <field name="total_operational_cost" string="Operational Cost (₹)"/>
+                <field name="fuel_efficiency_kmpl"/>
+                <field name="roi_pct"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_transitops_vehicle_form" model="ir.ui.view">
+        <field name="name">view.transitops.vehicle.form</field>
+        <field name="model">transitops.vehicle</field>
+        <field name="arch" type="xml">
+            <form string="Vehicle">
+                <header>
+                    <button name="action_retire" type="object" string="Retire" class="btn-danger" invisible="status == 'retired'"/>
+                    <field name="status" widget="statusbar" readonly="1"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="registration_no"/>
+                            <field name="vehicle_type"/>
+                            <field name="region"/>
+                        </group>
+                        <group>
+                            <field name="max_load_kg"/>
+                            <field name="odometer_km"/>
+                            <field name="acquisition_cost" string="Acquisition Cost (₹)"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Financials">
+                            <group>
+                                <field name="total_fuel_cost" string="Total Fuel Cost (₹)" readonly="1"/>
+                                <field name="total_fuel_liters" readonly="1"/>
+                                <field name="total_maintenance_cost" string="Total Maintenance Cost (₹)" readonly="1"/>
+                                <field name="total_operational_cost" string="Total Operational Cost (₹)" readonly="1"/>
+                                <field name="total_expense_other" string="Other Expenses (₹)" readonly="1"/>
+                                <field name="total_distance_km" readonly="1"/>
+                                <field name="total_revenue" string="Total Revenue (₹)" readonly="1"/>
+                                <field name="fuel_efficiency_kmpl" readonly="1"/>
+                                <field name="roi_pct" readonly="1"/>
+                            </group>
+                        </page>
+                        <page string="Trips">
+                            <field name="trip_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="source"/>
+                                    <field name="destination"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Maintenance">
+                            <field name="maintenance_ids" readonly="1">
+                                <list>
+                                    <field name="service_type"/>
+                                    <field name="date"/>
+                                    <field name="cost" string="Cost (₹)"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Fuel">
+                            <field name="fuel_log_ids" readonly="1">
+                                <list>
+                                    <field name="date"/>
+                                    <field name="liters"/>
+                                    <field name="cost" string="Cost (₹)"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                    <field name="notes"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_transitops_vehicle_search" model="ir.ui.view">
+        <field name="name">view.transitops.vehicle.search</field>
+        <field name="model">transitops.vehicle</field>
+        <field name="arch" type="xml">
+            <search string="Vehicles">
+                <field name="name"/>
+                <field name="registration_no"/>
+                <filter string="Available" name="filter_status_available" domain="[('status','=','available')]"/>
+                <filter string="On Trip" name="filter_status_on_trip" domain="[('status','=','on_trip')]"/>
+                <filter string="In Shop" name="filter_status_in_shop" domain="[('status','=','in_shop')]"/>
+                <filter string="Retired" name="filter_status_retired" domain="[('status','=','retired')]"/>
+                <filter string="Truck" name="filter_type_truck" domain="[('vehicle_type','=','truck')]"/>
+                <filter string="Van" name="filter_type_van" domain="[('vehicle_type','=','van')]"/>
+                <filter string="Bus" name="filter_type_bus" domain="[('vehicle_type','=','bus')]"/>
+                <filter string="Car" name="filter_type_car" domain="[('vehicle_type','=','car')]"/>
+                <filter string="Bike" name="filter_type_bike" domain="[('vehicle_type','=','bike')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Type" name="group_by_type" context="{'group_by':'vehicle_type'}"/>
+                    <filter string="Status" name="group_by_status" context="{'group_by':'status'}"/>
+                    <filter string="Region" name="group_by_region" context="{'group_by':'region'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_transitops_vehicle" model="ir.actions.act_window">
+        <field name="name">Vehicles</field>
+        <field name="res_model">transitops.vehicle</field>
+        <field name="view_mode">list,form,kanban</field>
+        <field name="help">Register your first vehicle to start dispatching trips.</field>
+    </record>
+
+    <record id="view_transitops_vehicle_kanban" model="ir.ui.view">
+        <field name="name">view.transitops.vehicle.kanban</field>
+        <field name="model">transitops.vehicle</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="status">
+                <field name="name"/>
+                <field name="status"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <strong><field name="name"/></strong>
+                            <div><field name="registration_no"/></div>
+                            <div> <field name="status"/> </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <menuitem id="menu_transitops_vehicle" name="Vehicles" parent="transitops.menu_transitops_fleet" action="action_transitops_vehicle" sequence="10"/>
+</odoo>
